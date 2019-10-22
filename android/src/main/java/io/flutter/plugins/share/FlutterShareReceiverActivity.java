@@ -216,17 +216,37 @@ public class FlutterShareReceiverActivity extends FlutterActivity {
 
 		} else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
 			Log.i(getClass().getSimpleName(), "receiving shared files!");
+
+			// Get URIs
 			ArrayList<Uri> uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+
+			// if (uris == null || uris.contains(null)) {
+				// Log.e(getClass().getSimpleName(), "@-> Fallback intent.getData()");
+				// uris = intent.getData();
+			// }
+
+			if (uris == null || uris.contains(null)) {
+				Log.e(getClass().getSimpleName(), "@-> !!! URIs is NULL or Uris contains null");
+				return;
+			}
+			
 			if (eventSink != null) {
 				Map<String, String> params = new HashMap<>();
 				params.put(TYPE, type);
 				params.put(IS_MULTIPLE, "true");
+
 				for (int i = 0; i < uris.size(); i++) {
+
 					params.put(Integer.toString(i), uris.get(i).toString());
+
 				}
+
 				eventSink.success(params);
+
 			} else if (!ignoring && !backlog.contains(intent)) {
+
 				backlog.add(intent);
+
 			}
 
 		}
